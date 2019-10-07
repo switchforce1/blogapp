@@ -1,13 +1,32 @@
-version: '2'
+version: '3'
 services:
   blogapp:
     container_name: blogapp
     build: 
-      context: ./modules/blogapp
+      context: services/blogapp
       dockerfile: ./Dockerfile
     volumes:
-      - ./modules/blogapp:/srv/blogapp
+      - ./services/blogapp:/var/www/blogapp
+    networks:
+      - blognet
     ports:
       - 8088:8000
       - 8099:8000
+    command: deploy.sh
+  mysql-db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: adminpass
+      MYSQL_DATABASE: blogapp
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    networks:
+      - blognet
+volumes:
+  db_data: {}
 
+networks:
+  blognet:
